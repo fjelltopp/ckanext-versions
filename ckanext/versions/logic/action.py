@@ -191,8 +191,9 @@ def version_delete(context, data_dict):
 
     model.Session.delete(version)
     model.repo.commit()
-
+    
     log.info('Version %s was deleted', version_id)
+    return version.as_dict()
 
 
 @toolkit.side_effect_free

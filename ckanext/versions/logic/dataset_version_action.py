@@ -127,6 +127,13 @@ def dataset_version_restore(context, data_dict):
     )
     restored_dataset = toolkit.get_action('package_update')(context, old_dataset)
     dataset_version_create(context, {'dataset_id': dataset.id, 'name': v_name, 'notes': v_notes})
+    for resource in restored_dataset['resources']:
+        resource_id = resource['id']
+        try:
+            toolkit.get_action('resource_validation_run')(context, {'resource_id': resource_id})
+        except toolkit.ValidationError:
+            # unsupported resource format for validation
+            pass
 
     return restored_dataset
 

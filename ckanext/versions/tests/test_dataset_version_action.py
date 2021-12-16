@@ -186,10 +186,10 @@ class TestDatasetVersion(object):
                 order_by(Version.created.desc()).first().name
             if counter:
                 assert new_name == "{}_{}_{}".format(prefix, counter, test_version['name']), \
-                    "restored version did not have the exected name"
+                    "restored version did not have the expected name"
             else:
                 assert new_name == "{}_{}".format(prefix, test_version['name']), \
-                    "restored version did not have the exected name"
+                    "restored version did not have the expected name"
 
     def test_dataset_version_restore_fails_if_dataset_not_found(self, test_version, test_dataset, org_editor):
         with pytest.raises(toolkit.ObjectNotFound, match="Dataset not found"):

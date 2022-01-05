@@ -123,7 +123,7 @@ def dataset_version_restore(context, data_dict):
     v_notes = _("Restored from version: {}").format(version['name'])
 
     releases = dataset_version_list(context, {'dataset_id': dataset_name_or_id})
-    release_names = [v['name'] for v in releases]
+    release_names = {v['name'] for v in releases}
     counter = 1
     while v_name in release_names:
         v_name = "{}_{}_{}".format(v_name_prefix, counter, version['name'])

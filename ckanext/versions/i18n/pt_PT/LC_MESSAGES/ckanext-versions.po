@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-versions 0.0.20\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-01-11 08:32+0000\n"
+"POT-Creation-Date: 2022-01-11 08:52+0000\n"
 "PO-Revision-Date: 2022-01-11 08:32+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: pt_PT\n"
@@ -21,41 +21,40 @@ msgstr ""
 
 #: ckanext/versions/blueprints.py:32
 msgid "Version not found"
-msgstr ""
+msgstr "Versão não encontrada"
 
 #: ckanext/versions/plugin.py:97
 msgid "Version history"
-msgstr ""
+msgstr "Histórico de versões"
 
 #: ckanext/versions/logic/dataset_version_action.py:121
 msgid "restored"
-msgstr ""
+msgstr "restaurado"
 
 #: ckanext/versions/logic/dataset_version_action.py:123
 msgid "Restored from version: {}"
-msgstr ""
+msgstr "Restaurada a partir da versão: {}"
 
 #: ckanext/versions/templates/versions/versions_view.html:4
 msgid "Current Version"
-msgstr ""
+msgstr "Versão atual"
 
 #: ckanext/versions/templates/versions/versions_view.html:5
 msgid "Version Number"
-msgstr ""
+msgstr "Número da versão"
 
 #: ckanext/versions/templates/versions/versions_view.html:6
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: ckanext/versions/templates/versions/versions_view.html:7
 msgid "Notes"
-msgstr ""
+msgstr "Notas"
 
 #: ckanext/versions/templates/versions/versions_view.html:8
 msgid "Publish Date"
-msgstr ""
+msgstr "Data de Publicação"
 
 #: ckanext/versions/templates/versions/versions_view.html:9
 msgid "Created by"
-msgstr ""
-
+msgstr "Criado por"

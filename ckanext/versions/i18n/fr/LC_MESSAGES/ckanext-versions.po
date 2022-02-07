@@ -1,0 +1,61 @@
+# French translations for ckanext-versions.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the ckanext-versions
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ckanext-versions 0.0.20\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-01-11 08:52+0000\n"
+"PO-Revision-Date: 2022-01-11 14:35+0100\n"
+"Last-Translator: \n"
+"Language-Team: fr <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.7.0\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: ckanext/versions/blueprints.py:32
+msgid "Version not found"
+msgstr "Version introuvable"
+
+#: ckanext/versions/plugin.py:97
+msgid "Version history"
+msgstr "Historique des versions"
+
+#: ckanext/versions/logic/dataset_version_action.py:121
+msgid "restored"
+msgstr "restauré"
+
+#: ckanext/versions/logic/dataset_version_action.py:123
+msgid "Restored from version: {}"
+msgstr "Restauré à partir de la version : {}"
+
+#: ckanext/versions/templates/versions/versions_view.html:4
+msgid "Current Version"
+msgstr "Version actuelle"
+
+#: ckanext/versions/templates/versions/versions_view.html:5
+msgid "Version Number"
+msgstr "Numéro de version"
+
+#: ckanext/versions/templates/versions/versions_view.html:6
+msgid "Name"
+msgstr "Nom"
+
+#: ckanext/versions/templates/versions/versions_view.html:7
+msgid "Notes"
+msgstr "Notes"
+
+#: ckanext/versions/templates/versions/versions_view.html:8
+msgid "Publish Date"
+msgstr "Date de publication"
+
+#: ckanext/versions/templates/versions/versions_view.html:9
+msgid "Created by"
+msgstr "Créé par"

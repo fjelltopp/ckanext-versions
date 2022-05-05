@@ -1,29 +1,47 @@
 name: Tests
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ 2.7, 3.9 ]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
+          python-version: ${{ matrix.python-version }}
       - name: Install requirements
         run: pip install flake8 pycodestyle
       - name: Check syntax
-        run: flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics --exclude ckan
+        run: |
+          flake8 . --count --max-line-length=127 --show-source --statistics
 
   test:
-    needs: lint
-    name: CKAN 2.9
+    name: CKAN
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ckan-container-version: "2.9-py2"
+            ckan-postgres-version: "2.9"
+            ckan-solr-version: "2.9-solr8"
+          - ckan-container-version: "2.9"
+            ckan-postgres-version: "2.9"
+            ckan-solr-version: "2.9-solr8"
+          - ckan-container-version: "2.10"
+            ckan-postgres-version: "2.10"
+            ckan-solr-version: "2.10"
+
     container:
-      image: openknowledge/ckan-dev:2.9
+      image: openknowledge/ckan-dev:${{ matrix.ckan-container-version }}
     services:
       solr:
-        image: ckan/ckan-solr-dev:2.9
+        image: ckan/ckan-solr:${{ matrix.ckan-solr-version }}
       postgres:
-        image: ckan/ckan-postgres-dev:2.9
+        image: ckan/ckan-postgres-dev:${{ matrix.ckan-postgres-version }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -50,6 +68,7 @@ jobs:
     - name: Setup extension
       run: |
         ckan -c test.ini db init
+        ckan -c test.ini versions initdb
     - name: Run tests
       run: pytest --ckan-ini=test.ini --cov=ckanext.versions --cov-report=xml --cov-append --disable-warnings ckanext/versions/tests
     - name: Upload coverage report to codecov

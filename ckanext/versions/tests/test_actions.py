@@ -169,7 +169,7 @@ class TestCreateResourceVersion(object):
         user = factories.Sysadmin()
         context = get_context(user)
 
-        assert False == resource_has_versions(
+        assert False is resource_has_versions(
             context, {'resource_id': resource['id']}
             )
 
@@ -181,7 +181,7 @@ class TestCreateResourceVersion(object):
             }
         )
 
-        assert True == resource_has_versions(
+        assert True is resource_has_versions(
             context, {'resource_id': resource['id']}
             )
 
@@ -427,6 +427,7 @@ class TestVersionDelete(object):
 
         assert len(resource_version_list(context, {'resource_id': resource['id']})) == 0
 
+
 @pytest.mark.usefixtures('clean_db', 'versions_setup')
 class TestActivityActions(object):
 
@@ -534,7 +535,7 @@ class TestActivityActions(object):
         )
         expected_activity_id = version['activity_id']
 
-        assert True == resource_in_activity(context, {
+        assert True is resource_in_activity(context, {
             'activity_id': expected_activity_id,
             'resource_id': resource['id']}
             )
@@ -544,7 +545,7 @@ class TestActivityActions(object):
             name='Resource 2'
             )
 
-        assert False == resource_in_activity(context, {
+        assert False is resource_in_activity(context, {
             'activity_id': expected_activity_id,
             'resource_id': resource_2['id']}
             )

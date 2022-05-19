@@ -350,14 +350,13 @@ class TestDatasetVersion(object):
         assert new_dataset['id'] == old_dataset['id']
 
     def test_activity_dataset_show_fails_if_no_dataset_in_activity(self, test_dataset, org_editor):
-        version = create_version(test_dataset['id'], org_editor)
         context = get_context(org_editor)
         with pytest.raises(toolkit.ObjectNotFound, match='Dataset not found in the activity object.'):
             activity_dataset_show(
                 context,
                 {
                     'dataset_id': 'fake-dataset-id',
-                    'activity_id': version['activity_id']
+                    'activity_id': 'fake-activity-id'
                 }
             )
 

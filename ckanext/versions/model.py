@@ -55,5 +55,5 @@ def tables_exist():
         if engine is None:
             return False
         return Version.__table__.exists(bind=engine)
-    except Exception:
+    except (AttributeError, TypeError):
         return False

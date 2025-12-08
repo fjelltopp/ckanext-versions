@@ -44,8 +44,16 @@ class Version(Base):
 
 
 def create_tables():
-    Version.__table__.create()
+    from ckan.model import meta
+    Version.__table__.create(bind=meta.engine, checkfirst=True)
 
 
 def tables_exist():
-    return Version.__table__.exists()
+    from ckan.model import meta
+    try:
+        engine = meta.engine
+        if engine is None:
+            return False
+        return Version.__table__.exists(bind=engine)
+    except Exception:
+        return False

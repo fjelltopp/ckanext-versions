@@ -12,6 +12,12 @@ from sqlalchemy.exc import IntegrityError
 
 from ckanext.versions.model import Version
 
+# CKAN 2.10+ moved Activity to a separate module
+try:
+    from ckan.model.activity import Activity
+except ImportError:
+    Activity = core_model.Activity
+
 log = logging.getLogger(__name__)
 
 
@@ -107,9 +113,9 @@ def resource_version_create(context, data_dict):
             site_id = toolkit.config.get('ckan.site_id', 'ckan_site_user')
             creator_user_id = model.User.get(site_id).id
 
-    activity = model.Session.query(model.Activity). \
+    activity = model.Session.query(Activity). \
         filter_by(object_id=resource.package_id). \
-        order_by(model.Activity.timestamp.desc()). \
+        order_by(Activity.timestamp.desc()). \
         first()
 
     if not activity:

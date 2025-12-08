@@ -9,6 +9,12 @@ from ckan.plugins import toolkit
 from ckanext.versions.logic.action import version_show
 from ckanext.versions.model import Version
 
+# CKAN 2.10+ moved Activity to a separate module
+try:
+    from ckan.model.activity import Activity
+except ImportError:
+    Activity = core_model.Activity
+
 log = logging.getLogger(__name__)
 
 
@@ -48,11 +54,11 @@ def dataset_version_create(context, data_dict):
     creator_user_id = context['auth_user_obj'].id
 
     if activity_id:
-        activity = model.Activity.get(activity_id)
+        activity = Activity.get(activity_id)
     else:
-        activity = model.Session.query(model.Activity). \
+        activity = model.Session.query(Activity). \
             filter_by(object_id=dataset_id). \
-            order_by(model.Activity.timestamp.desc()). \
+            order_by(Activity.timestamp.desc()). \
             first()
     if not activity:
         raise toolkit.ObjectNotFound('Activity not found')

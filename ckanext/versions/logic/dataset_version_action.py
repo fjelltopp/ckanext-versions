@@ -9,10 +9,10 @@ from ckan.plugins import toolkit
 from ckanext.versions.logic.action import version_show
 from ckanext.versions.model import Version
 
-# CKAN 2.10+ moved Activity to a separate module
+# CKAN 2.10+ Activity is in core_model, older versions in separate module
 try:
     from ckan.model.activity import Activity
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     Activity = core_model.Activity
 
 log = logging.getLogger(__name__)

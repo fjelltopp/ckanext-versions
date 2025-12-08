@@ -55,5 +55,7 @@ def tables_exist():
         if engine is None:
             return False
         return Version.__table__.exists(bind=engine)
-    except (AttributeError, TypeError):
+    except Exception:
+        # Catch all exceptions during database initialization
+        # This can happen when CKAN core tables don't exist yet
         return False

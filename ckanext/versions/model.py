@@ -58,5 +58,10 @@ def tables_exist():
         engine = meta.engine
     else:
         engine = metadata.bind
+
+    # Return False if engine is not available yet (e.g., during early startup)
+    if engine is None:
+        return False
+
     inspector = inspect(engine)
     return inspector.has_table(Version.__tablename__)

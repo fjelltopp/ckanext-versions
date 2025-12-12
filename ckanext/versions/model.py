@@ -44,8 +44,18 @@ class Version(Base):
 
 
 def create_tables():
-    Version.__table__.create()
+    if metadata.bind is None:
+        from ckan.model import meta
+        bind = meta.engine
+    else:
+        bind = metadata.bind
+    Version.__table__.create(bind=bind, checkfirst=True)
 
 
 def tables_exist():
-    return Version.__table__.exists()
+    if metadata.bind is None:
+        from ckan.model import meta
+        bind = meta.engine
+    else:
+        bind = metadata.bind
+    return Version.__table__.exists(bind=bind)

@@ -7,7 +7,7 @@ from collections import OrderedDict
 from ckan.model.meta import metadata
 from ckan.model.types import UuidType
 from sqlalchemy import (Column, DateTime, Unicode,
-                        UniqueConstraint, orm)
+                        UniqueConstraint, orm, inspect)
 from sqlalchemy.ext.declarative import declarative_base
 
 log = logging.getLogger(__name__)
@@ -46,16 +46,17 @@ class Version(Base):
 def create_tables():
     if metadata.bind is None:
         from ckan.model import meta
-        bind = meta.engine
+        engine = meta.engine
     else:
-        bind = metadata.bind
-    Version.__table__.create(bind=bind, checkfirst=True)
+        engine = metadata.bind
+    Version.__table__.create(engine, checkfirst=True)
 
 
 def tables_exist():
     if metadata.bind is None:
         from ckan.model import meta
-        bind = meta.engine
+        engine = meta.engine
     else:
-        bind = metadata.bind
-    return Version.__table__.exists(bind=bind)
+        engine = metadata.bind
+    inspector = inspect(engine)
+    return inspector.has_table(Version.__tablename__)

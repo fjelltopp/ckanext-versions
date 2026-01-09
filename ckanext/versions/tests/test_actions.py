@@ -1,4 +1,5 @@
 import pytest
+from ckan import model
 from ckan.plugins import toolkit
 from ckan.tests import factories, helpers
 
@@ -20,12 +21,14 @@ class TestCreateResourceVersion(object):
         dataset = factories.Dataset()
         resource = factories.Resource(package_id=dataset['id'])
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -50,12 +53,14 @@ class TestCreateResourceVersion(object):
         dataset = factories.Dataset(owner_org=owner_org['id'])
         resource = factories.Resource(package_id=dataset['id'])
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -83,6 +88,8 @@ class TestCreateResourceVersion(object):
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -145,12 +152,14 @@ class TestCreateResourceVersion(object):
             name='First name'
             )
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package to ensure there's an activity with the resource
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity for version creation'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -163,6 +172,8 @@ class TestCreateResourceVersion(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second Name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         package = toolkit.get_action('activity_data_show')(
             context, {'id': version['activity_id']}
@@ -205,6 +216,8 @@ class TestCreateResourceVersion(object):
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -227,12 +240,14 @@ class TestCreateResourceVersion(object):
         dataset = factories.Dataset(owner_org=owner_org['id'])
         resource = factories.Resource(package_id=dataset['id'])
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -268,6 +283,8 @@ class TestResourceVersionList(object):
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -279,6 +296,8 @@ class TestResourceVersionList(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -320,6 +339,8 @@ class TestResourceVersionList(object):
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -331,6 +352,8 @@ class TestResourceVersionList(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -385,12 +408,14 @@ class TestVersionShow(object):
             name='First name'
             )
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -421,6 +446,8 @@ class TestVersionShow(object):
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -459,6 +486,8 @@ class TestVersionDelete(object):
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -483,12 +512,14 @@ class TestVersionDelete(object):
             name='First name'
         )
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         for i in range(0, 3):
             resource_version_create(
@@ -521,12 +552,14 @@ class TestActivityActions(object):
             )
 
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -539,6 +572,8 @@ class TestActivityActions(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version_2 = resource_version_create(
             context, {
@@ -580,12 +615,14 @@ class TestActivityActions(object):
             )
 
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -615,12 +652,14 @@ class TestActivityActions(object):
             )
 
         context = get_context(user)
-        
+
         # Trigger an activity by patching the package
         toolkit.get_action('package_patch')(context, {
             'id': dataset['id'],
             'notes': 'Trigger activity'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -676,8 +715,8 @@ class TestResourceView(object):
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
-        assert resource_views[0]['id'] == image_view['id']
-        assert resource_views[1]['id'] == versions_view['id']
+        assert resource_views[0]['id'] == image_view['id'], f"Expected image_view at [0], got {resource_views[0]['view_type']}"
+        assert resource_views[1]['id'] == versions_view['id'], f"Expected versions_view at [1], got {resource_views[1]['view_type']}"
 
     def test_resource_view_list_returns_default_order_if_no_versions_view(self):
         user = factories.User()
@@ -706,5 +745,5 @@ class TestResourceView(object):
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
-        assert resource_views[0]['id'] == image_view['id']
-        assert resource_views[1]['id'] == image_view_2['id']
+        assert resource_views[0]['id'] == image_view['id'], f"Expected first view at [0]"
+        assert resource_views[1]['id'] == image_view_2['id'], f"Expected second view at [1]"

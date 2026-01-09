@@ -1,5 +1,6 @@
 import pytest
 
+from ckan import model
 from ckan.tests import factories
 from ckanext.versions.tests import create_version, versions_db_setup
 
@@ -7,6 +8,23 @@ from ckanext.versions.tests import create_version, versions_db_setup
 @pytest.fixture
 def versions_setup():
     versions_db_setup()
+
+
+@pytest.fixture
+def clean_db_with_migrations(clean_db):
+    """
+    Extends clean_db fixture to add CKAN 2.11 activity plugin schema.
+
+    The activity plugin in CKAN 2.11 requires a permission_labels column
+    in the activity table. This fixture ensures the column exists after
+    clean_db resets the database.
+    """
+    # After clean_db runs, add the permission_labels column
+    connection = model.Session.connection()
+    connection.execute(
+        "ALTER TABLE activity ADD COLUMN IF NOT EXISTS permission_labels text[];"
+    )
+    model.Session.commit()
 
 
 @pytest.fixture()

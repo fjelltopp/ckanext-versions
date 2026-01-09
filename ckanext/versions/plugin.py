@@ -68,7 +68,7 @@ class VersionsPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             'version_delete': auth.version_delete,
             'version_list': auth.version_list,
             'version_show': auth.version_show,
-            'resource_version_clear': action.resource_version_clear,
+            'resource_version_clear': auth.resource_version_clear,
         }
 
     # ITemplateHelpers

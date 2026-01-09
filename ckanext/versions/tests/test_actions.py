@@ -715,8 +715,10 @@ class TestResourceView(object):
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
-        assert resource_views[0]['id'] == image_view['id'], f"Expected image_view at [0], got {resource_views[0]['view_type']}"
-        assert resource_views[1]['id'] == versions_view['id'], f"Expected versions_view at [1], got {resource_views[1]['view_type']}"
+        assert resource_views[0]['id'] == image_view['id'], \
+            f"Expected image_view at [0], got {resource_views[0]['view_type']}"
+        assert resource_views[1]['id'] == versions_view['id'], \
+            f"Expected versions_view at [1], got {resource_views[1]['view_type']}"
 
     def test_resource_view_list_returns_default_order_if_no_versions_view(self):
         user = factories.User()
@@ -745,5 +747,5 @@ class TestResourceView(object):
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
-        assert resource_views[0]['id'] == image_view['id'], f"Expected first view at [0]"
-        assert resource_views[1]['id'] == image_view_2['id'], f"Expected second view at [1]"
+        assert resource_views[0]['id'] == image_view['id'], "Expected first view at [0]"
+        assert resource_views[1]['id'] == image_view_2['id'], "Expected second view at [1]"

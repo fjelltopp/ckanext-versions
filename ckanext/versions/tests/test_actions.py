@@ -16,12 +16,19 @@ from ckanext.versions.tests import get_context
 class TestCreateResourceVersion(object):
 
     def test_resource_version_create(self):
+        user = factories.Sysadmin()
         dataset = factories.Dataset()
         resource = factories.Resource(package_id=dataset['id'])
-        user = factories.Sysadmin()
+        context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes'
@@ -42,9 +49,16 @@ class TestCreateResourceVersion(object):
         )
         dataset = factories.Dataset(owner_org=owner_org['id'])
         resource = factories.Resource(package_id=dataset['id'])
+        context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes'
@@ -117,13 +131,19 @@ class TestCreateResourceVersion(object):
             )
 
     def test_version_activity_is_correct(self):
+        user = factories.Sysadmin()
         dataset = factories.Dataset()
         resource = factories.Resource(
             package_id=dataset['id'],
             name='First name'
             )
-        user = factories.Sysadmin()
         context = get_context(user)
+        
+        # Trigger an activity by patching the package to ensure there's an activity with the resource
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity for version creation'
+        })
 
         version = resource_version_create(
             context, {
@@ -326,13 +346,19 @@ class TestVersionUpdate(object):
 class TestVersionShow(object):
 
     def test_version_show(self):
+        user = factories.Sysadmin()
         dataset = factories.Dataset()
         resource = factories.Resource(
             package_id=dataset['id'],
             name='First name'
             )
-        user = factories.Sysadmin()
         context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
             context, {
@@ -525,6 +551,12 @@ class TestActivityActions(object):
             )
 
         context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
             context, {
@@ -554,6 +586,7 @@ class TestActivityActions(object):
 @pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestResourceView(object):
     def test_resource_view_list_returns_versions_view_last(self):
+        user = factories.User()
         org = factories.Organization()
         dataset = factories.Dataset(owner_org=org['id'])
         resource = factories.Resource(
@@ -574,8 +607,8 @@ class TestResourceView(object):
             'description': 'A nice versions view',
         }
 
-        versions_view = helpers.call_action('resource_view_create', **versions_view_dict)
-        image_view = helpers.call_action('resource_view_create', **image_view_dict)
+        versions_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **versions_view_dict)
+        image_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict)
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
@@ -583,6 +616,7 @@ class TestResourceView(object):
         assert resource_views[1]['id'] == versions_view['id']
 
     def test_resource_view_list_returns_default_order_if_no_versions_view(self):
+        user = factories.User()
         org = factories.Organization()
         dataset = factories.Dataset(owner_org=org['id'])
         resource = factories.Resource(
@@ -603,8 +637,8 @@ class TestResourceView(object):
             'image_url': 'url',
         }
 
-        image_view = helpers.call_action('resource_view_create', **image_view_dict)
-        image_view_2 = helpers.call_action('resource_view_create', **image_view_dict_2)
+        image_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict)
+        image_view_2 = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict_2)
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 

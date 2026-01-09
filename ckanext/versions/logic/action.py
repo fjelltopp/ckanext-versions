@@ -12,11 +12,15 @@ from sqlalchemy.exc import IntegrityError
 
 from ckanext.versions.model import Version
 
-# CKAN 2.10+ moved Activity to a separate module
+# Activity import for different CKAN versions
+# CKAN 2.10+ moved Activity to a separate plugin
 try:
-    from ckan.model.activity import Activity
+    from ckanext.activity.model import Activity
 except ImportError:
-    Activity = core_model.Activity
+    try:
+        from ckan.model import Activity
+    except ImportError:
+        Activity = core_model.Activity
 
 log = logging.getLogger(__name__)
 

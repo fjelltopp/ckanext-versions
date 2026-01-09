@@ -31,7 +31,7 @@ def test_version_download_url_with_external_url():
     assert download_url == url
 
 
-@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_request_context')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_request_context', 'with_plugins')
 def test_dataset_version_for_activity_id_return_version(org_editor, test_dataset, test_version):
     activity_id = test_version['activity_id']
 
@@ -40,7 +40,7 @@ def test_dataset_version_for_activity_id_return_version(org_editor, test_dataset
     assert test_version['id'] == actual_version['id']
 
 
-@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_request_context')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_request_context', 'with_plugins')
 def test_dataset_version_for_activity_returns_none_if_no_version(app, test_dataset, org_editor):
     context = get_context(org_editor)
     toolkit.get_action('package_patch')(

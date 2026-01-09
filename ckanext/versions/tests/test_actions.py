@@ -12,7 +12,7 @@ from ckanext.versions.logic.action import (
 from ckanext.versions.tests import get_context
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestCreateResourceVersion(object):
 
     def test_resource_version_create(self):
@@ -211,7 +211,7 @@ class TestCreateResourceVersion(object):
         assert version['creator_user_id'] == user_creator['id']
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestResourceVersionList(object):
 
     def test_resource_version_list(self):
@@ -302,7 +302,7 @@ class TestResourceVersionList(object):
         assert helpers.call_action('resource_version_current', {}, resource_id=resource['id']) is None
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestVersionUpdate(object):
 
     def test_version_update(self, test_version, org_editor):
@@ -322,7 +322,7 @@ class TestVersionUpdate(object):
         assert "updated-notes" == updated_version['notes']
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestVersionShow(object):
 
     def test_version_show(self):
@@ -378,7 +378,7 @@ class TestVersionShow(object):
         assert result['creator_user_id'] == user['id']
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestVersionDelete(object):
 
     def test_version_delete(self):
@@ -428,7 +428,7 @@ class TestVersionDelete(object):
         assert len(resource_version_list(context, {'resource_id': resource['id']})) == 0
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestActivityActions(object):
 
     def test_activity_resource_shows_correct_resource(self):
@@ -551,7 +551,7 @@ class TestActivityActions(object):
             )
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestResourceView(object):
     def test_resource_view_list_returns_versions_view_last(self):
         org = factories.Organization()

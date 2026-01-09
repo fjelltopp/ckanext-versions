@@ -14,7 +14,7 @@ from ckanext.versions.model import Version
 from ckanext.versions.tests import get_context, assert_version, create_version, restore_version
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestDatasetVersion(object):
 
     def test_dataset_version_create_should_create_version(self, org_admin, test_dataset):

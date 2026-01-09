@@ -59,7 +59,7 @@ def public_dataset(org):
     return factories.Dataset(owner_org=org['id'], private=False)
 
 
-@pytest.mark.usefixtures("clean_db", "versions_setup")
+@pytest.mark.usefixtures("clean_db_with_migrations", "versions_setup", "with_plugins")
 class TestVersionsAuth(object):
 
     def _get_context(self, user):

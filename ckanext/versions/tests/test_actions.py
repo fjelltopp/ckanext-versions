@@ -711,7 +711,9 @@ class TestResourceView(object):
         }
 
         versions_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **versions_view_dict)
+        model.Session.commit()
         image_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict)
+        model.Session.commit()
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
@@ -743,7 +745,9 @@ class TestResourceView(object):
         }
 
         image_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict)
+        model.Session.commit()
         image_view_2 = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict_2)
+        model.Session.commit()
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 

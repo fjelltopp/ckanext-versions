@@ -469,6 +469,12 @@ class TestActivityActions(object):
             )
 
         context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
             context, {
@@ -522,6 +528,12 @@ class TestActivityActions(object):
             )
 
         context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
             context, {

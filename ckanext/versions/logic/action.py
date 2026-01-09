@@ -456,10 +456,8 @@ def resource_view_list(up_func, context, data_dict):
     '''
     resource_views = up_func(context, data_dict)
 
-    versions_views = []
-    for i, view in enumerate(resource_views):
-        if view['view_type'] == 'versions_view':
-            versions_views.append(resource_views.pop(i))
+    versions_views = [view for view in resource_views if view['view_type'] == 'versions_view']
+    resource_views = [view for view in resource_views if view['view_type'] != 'versions_view']
 
     resource_views.extend(versions_views)
 

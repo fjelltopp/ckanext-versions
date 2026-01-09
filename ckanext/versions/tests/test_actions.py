@@ -76,9 +76,16 @@ class TestCreateResourceVersion(object):
         dataset = factories.Dataset()
         resource = factories.Resource(package_id=dataset['id'])
         user = factories.Sysadmin()
+        context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes'
@@ -87,7 +94,7 @@ class TestCreateResourceVersion(object):
 
         with pytest.raises(toolkit.ValidationError):
             resource_version_create(
-                get_context(user), {
+                context, {
                     'resource_id': resource['id'],
                     'name': '1',
                     'notes': 'Version notes'
@@ -193,6 +200,12 @@ class TestCreateResourceVersion(object):
             context, {'resource_id': resource['id']}
             )
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+
         resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -250,6 +263,12 @@ class TestResourceVersionList(object):
         user = factories.Sysadmin()
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+
         resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -295,6 +314,12 @@ class TestResourceVersionList(object):
             )
         user = factories.Sysadmin()
         context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         resource_version_create(
             context, {
@@ -391,6 +416,12 @@ class TestVersionShow(object):
         user = factories.Sysadmin()
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+
         version = resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -422,6 +453,12 @@ class TestVersionDelete(object):
             )
         user = factories.Sysadmin()
         context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         version = resource_version_create(
             context, {

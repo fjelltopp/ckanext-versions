@@ -432,11 +432,19 @@ class TestVersionDelete(object):
             version_show(context, {'version_id': version['id']})
 
     def test_resource_version_clear(self):
+        user = factories.Sysadmin()
+        dataset = factories.Dataset()
         resource = factories.Resource(
+            package_id=dataset['id'],
             name='First name'
         )
-        user = factories.Sysadmin()
         context = get_context(user)
+        
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
 
         for i in range(0, 3):
             resource_version_create(

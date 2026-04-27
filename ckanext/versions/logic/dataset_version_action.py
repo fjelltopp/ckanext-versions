@@ -9,15 +9,7 @@ from ckan.plugins import toolkit
 from ckanext.versions.logic.action import version_show
 from ckanext.versions.model import Version
 
-# Activity import for different CKAN versions
-# CKAN 2.10+ moved Activity to a separate plugin
-try:
-    from ckanext.activity.model import Activity
-except ImportError:
-    try:
-        from ckan.model import Activity
-    except ImportError:
-        Activity = core_model.Activity
+from ckanext.activity.model import Activity
 
 log = logging.getLogger(__name__)
 

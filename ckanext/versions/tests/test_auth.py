@@ -4,7 +4,62 @@ from ckan.plugins import toolkit
 from ckan.tests import factories, helpers
 
 
-@pytest.mark.usefixtures("clean_db", "versions_setup")
+@pytest.fixture
+def org_admin():
+    return factories.User()
+
+
+@pytest.fixture
+def org_editor():
+    return factories.User()
+
+
+@pytest.fixture
+def org_member():
+    return factories.User()
+
+
+@pytest.fixture
+def other_org_admin():
+    return factories.User()
+
+
+@pytest.fixture
+def admin_user():
+    return factories.Sysadmin()
+
+
+@pytest.fixture
+def org(org_admin, org_editor, org_member):
+    return factories.Organization(
+        users=[
+            {'name': org_admin['name'], 'capacity': 'admin'},
+            {'name': org_editor['name'], 'capacity': 'editor'},
+            {'name': org_member['name'], 'capacity': 'member'},
+        ]
+    )
+
+
+@pytest.fixture
+def other_org(other_org_admin):
+    return factories.Organization(
+        users=[
+            {'name': other_org_admin['name'], 'capacity': 'admin'},
+        ]
+    )
+
+
+@pytest.fixture
+def private_dataset(org):
+    return factories.Dataset(owner_org=org['id'], private=True)
+
+
+@pytest.fixture
+def public_dataset(org):
+    return factories.Dataset(owner_org=org['id'], private=False)
+
+
+@pytest.mark.usefixtures("clean_db_with_migrations", "versions_setup", "with_plugins")
 class TestVersionsAuth(object):
 
     def _get_context(self, user):
@@ -12,33 +67,6 @@ class TestVersionsAuth(object):
             'model': model,
             'user': user if isinstance(user, str) else user['name']
         }
-
-    def setup(self):
-        # TODO: Refactor to a new pytest approach
-        self.org_admin = factories.User()
-        self.org_editor = factories.User()
-        self.org_member = factories.User()
-        self.other_org_admin = factories.User()
-        self.admin_user = factories.Sysadmin()
-
-        self.org = factories.Organization(
-            users=[
-                {'name': self.org_admin['name'], 'capacity': 'admin'},
-                {'name': self.org_editor['name'], 'capacity': 'editor'},
-                {'name': self.org_member['name'], 'capacity': 'member'},
-            ]
-        )
-
-        self.other_org = factories.Organization(
-            users=[
-                {'name': self.other_org_admin['name'], 'capacity': 'admin'},
-            ]
-        )
-
-        self.private_dataset = factories.Dataset(owner_org=self.org['id'],
-                                                 private=True)
-        self.public_dataset = factories.Dataset(owner_org=self.org['id'],
-                                                private=False)
 
     @pytest.mark.parametrize("user_type, dataset_type", [
         ('org_admin', 'private_dataset'),
@@ -48,11 +76,11 @@ class TestVersionsAuth(object):
         ('admin_user', 'private_dataset'),
         ('admin_user', 'public_dataset'),
     ])
-    def test_create_is_authorized(self, user_type, dataset_type):
+    def test_create_is_authorized(self, user_type, dataset_type, request):
         """Test that authorized users can create versions on a given dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         assert helpers.call_auth('version_create',
                                  context=context,
@@ -64,12 +92,12 @@ class TestVersionsAuth(object):
         ('other_org_admin', 'private_dataset'),
         ('other_org_admin', 'public_dataset'),
     ])
-    def test_create_is_unauthorized(self, user_type, dataset_type):
+    def test_create_is_unauthorized(self, user_type, dataset_type, request):
         """Test that unauthorized users cannot create versions on a given
         dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         with pytest.raises(toolkit.NotAuthorized):
             helpers.call_auth(
@@ -85,11 +113,11 @@ class TestVersionsAuth(object):
         ('admin_user', 'private_dataset'),
         ('admin_user', 'public_dataset'),
     ])
-    def test_delete_is_authorized(self, user_type, dataset_type):
+    def test_delete_is_authorized(self, user_type, dataset_type, request):
         """Test that authorized users can delete versions on a given dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         assert helpers.call_auth('version_delete',
                                  context=context,
@@ -101,12 +129,12 @@ class TestVersionsAuth(object):
         ('other_org_admin', 'private_dataset'),
         ('other_org_admin', 'public_dataset'),
     ])
-    def test_delete_is_unauthorized(self, user_type, dataset_type):
+    def test_delete_is_unauthorized(self, user_type, dataset_type, request):
         """Test that unauthorized users cannot delete versions on a given
         dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         with pytest.raises(toolkit.NotAuthorized):
             helpers.call_auth(
@@ -125,11 +153,11 @@ class TestVersionsAuth(object):
         ('admin_user', 'public_dataset'),
         ('other_org_admin', 'public_dataset'),
     ])
-    def test_list_is_authorized(self, user_type, dataset_type):
+    def test_list_is_authorized(self, user_type, dataset_type, request):
         """Test that authorized users can list versions of a given dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         assert helpers.call_auth('version_list',
                                  context=context,
@@ -138,12 +166,12 @@ class TestVersionsAuth(object):
     @pytest.mark.parametrize("user_type, dataset_type", [
         ('other_org_admin', 'private_dataset'),
     ])
-    def test_list_is_unauthorized(self, user_type, dataset_type):
+    def test_list_is_unauthorized(self, user_type, dataset_type, request):
         """Test that unauthorized users cannot list versions on a given
         dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         with pytest.raises(toolkit.NotAuthorized):
             helpers.call_auth(
@@ -162,11 +190,11 @@ class TestVersionsAuth(object):
         ('admin_user', 'public_dataset'),
         ('other_org_admin', 'public_dataset'),
     ])
-    def test_show_is_authorized(self, user_type, dataset_type):
+    def test_show_is_authorized(self, user_type, dataset_type, request):
         """Test that authorized users can view versions of a given dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         assert helpers.call_auth('version_show',
                                  context=context,
@@ -175,12 +203,12 @@ class TestVersionsAuth(object):
     @pytest.mark.parametrize("user_type, dataset_type", [
         ('other_org_admin', 'private_dataset'),
     ])
-    def test_show_is_unauthorized(self, user_type, dataset_type):
+    def test_show_is_unauthorized(self, user_type, dataset_type, request):
         """Test that unauthorized users cannot view versions on a given
         dataset
         """
-        user = getattr(self, user_type)
-        dataset = getattr(self, dataset_type)
+        user = request.getfixturevalue(user_type)
+        dataset = request.getfixturevalue(dataset_type)
         context = self._get_context(user)
         with pytest.raises(toolkit.NotAuthorized):
             helpers.call_auth(

@@ -12,6 +12,8 @@ from sqlalchemy.exc import IntegrityError
 
 from ckanext.versions.model import Version
 
+from ckanext.activity.model import Activity
+
 log = logging.getLogger(__name__)
 
 
@@ -107,9 +109,9 @@ def resource_version_create(context, data_dict):
             site_id = toolkit.config.get('ckan.site_id', 'ckan_site_user')
             creator_user_id = model.User.get(site_id).id
 
-    activity = model.Session.query(model.Activity). \
+    activity = model.Session.query(Activity). \
         filter_by(object_id=resource.package_id). \
-        order_by(model.Activity.timestamp.desc()). \
+        order_by(Activity.timestamp.desc()). \
         first()
 
     if not activity:
@@ -446,10 +448,8 @@ def resource_view_list(up_func, context, data_dict):
     '''
     resource_views = up_func(context, data_dict)
 
-    versions_views = []
-    for i, view in enumerate(resource_views):
-        if view['view_type'] == 'versions_view':
-            versions_views.append(resource_views.pop(i))
+    versions_views = [view for view in resource_views if view['view_type'] == 'versions_view']
+    resource_views = [view for view in resource_views if view['view_type'] != 'versions_view']
 
     resource_views.extend(versions_views)
 

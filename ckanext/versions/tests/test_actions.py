@@ -1,4 +1,5 @@
 import pytest
+from ckan import model
 from ckan.plugins import toolkit
 from ckan.tests import factories, helpers
 
@@ -12,16 +13,25 @@ from ckanext.versions.logic.action import (
 from ckanext.versions.tests import get_context
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestCreateResourceVersion(object):
 
     def test_resource_version_create(self):
+        user = factories.Sysadmin()
         dataset = factories.Dataset()
         resource = factories.Resource(package_id=dataset['id'])
-        user = factories.Sysadmin()
+        context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes'
@@ -42,9 +52,18 @@ class TestCreateResourceVersion(object):
         )
         dataset = factories.Dataset(owner_org=owner_org['id'])
         resource = factories.Resource(package_id=dataset['id'])
+        context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes'
@@ -62,9 +81,18 @@ class TestCreateResourceVersion(object):
         dataset = factories.Dataset()
         resource = factories.Resource(package_id=dataset['id'])
         user = factories.Sysadmin()
+        context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes'
@@ -73,7 +101,7 @@ class TestCreateResourceVersion(object):
 
         with pytest.raises(toolkit.ValidationError):
             resource_version_create(
-                get_context(user), {
+                context, {
                     'resource_id': resource['id'],
                     'name': '1',
                     'notes': 'Version notes'
@@ -117,13 +145,21 @@ class TestCreateResourceVersion(object):
             )
 
     def test_version_activity_is_correct(self):
+        user = factories.Sysadmin()
         dataset = factories.Dataset()
         resource = factories.Resource(
             package_id=dataset['id'],
             name='First name'
             )
-        user = factories.Sysadmin()
         context = get_context(user)
+
+        # Trigger an activity by patching the package to ensure there's an activity with the resource
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity for version creation'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -136,6 +172,8 @@ class TestCreateResourceVersion(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second Name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         package = toolkit.get_action('activity_data_show')(
             context, {'id': version['activity_id']}
@@ -173,6 +211,14 @@ class TestCreateResourceVersion(object):
             context, {'resource_id': resource['id']}
             )
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -193,9 +239,18 @@ class TestCreateResourceVersion(object):
         user_creator = factories.User()
         dataset = factories.Dataset(owner_org=owner_org['id'])
         resource = factories.Resource(package_id=dataset['id'])
+        context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
-            get_context(user), {
+            context, {
                 'resource_id': resource['id'],
                 'name': '1',
                 'notes': 'Version notes',
@@ -211,7 +266,7 @@ class TestCreateResourceVersion(object):
         assert version['creator_user_id'] == user_creator['id']
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestResourceVersionList(object):
 
     def test_resource_version_list(self):
@@ -223,6 +278,14 @@ class TestResourceVersionList(object):
         user = factories.Sysadmin()
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -233,6 +296,8 @@ class TestResourceVersionList(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -269,6 +334,14 @@ class TestResourceVersionList(object):
         user = factories.Sysadmin()
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -279,6 +352,8 @@ class TestResourceVersionList(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         resource_version_create(
             context, {
@@ -302,7 +377,7 @@ class TestResourceVersionList(object):
         assert helpers.call_action('resource_version_current', {}, resource_id=resource['id']) is None
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestVersionUpdate(object):
 
     def test_version_update(self, test_version, org_editor):
@@ -322,17 +397,25 @@ class TestVersionUpdate(object):
         assert "updated-notes" == updated_version['notes']
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestVersionShow(object):
 
     def test_version_show(self):
+        user = factories.Sysadmin()
         dataset = factories.Dataset()
         resource = factories.Resource(
             package_id=dataset['id'],
             name='First name'
             )
-        user = factories.Sysadmin()
         context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -358,6 +441,14 @@ class TestVersionShow(object):
         user = factories.Sysadmin()
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         version = resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -378,7 +469,7 @@ class TestVersionShow(object):
         assert result['creator_user_id'] == user['id']
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestVersionDelete(object):
 
     def test_version_delete(self):
@@ -389,6 +480,14 @@ class TestVersionDelete(object):
             )
         user = factories.Sysadmin()
         context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version = resource_version_create(
             context, {
@@ -406,11 +505,21 @@ class TestVersionDelete(object):
             version_show(context, {'version_id': version['id']})
 
     def test_resource_version_clear(self):
+        user = factories.Sysadmin()
+        dataset = factories.Dataset()
         resource = factories.Resource(
+            package_id=dataset['id'],
             name='First name'
         )
-        user = factories.Sysadmin()
         context = get_context(user)
+
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         for i in range(0, 3):
             resource_version_create(
@@ -428,7 +537,7 @@ class TestVersionDelete(object):
         assert len(resource_version_list(context, {'resource_id': resource['id']})) == 0
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestActivityActions(object):
 
     def test_activity_resource_shows_correct_resource(self):
@@ -444,6 +553,14 @@ class TestActivityActions(object):
 
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         version = resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -455,6 +572,8 @@ class TestActivityActions(object):
         toolkit.get_action('resource_patch')(context, {
             'id': resource['id'], 'name': 'Second name'
         })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
 
         version_2 = resource_version_create(
             context, {
@@ -497,6 +616,14 @@ class TestActivityActions(object):
 
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         version = resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -526,6 +653,14 @@ class TestActivityActions(object):
 
         context = get_context(user)
 
+        # Trigger an activity by patching the package
+        toolkit.get_action('package_patch')(context, {
+            'id': dataset['id'],
+            'notes': 'Trigger activity'
+        })
+        # Explicitly commit to ensure activity is visible to subsequent queries
+        model.Session.commit()
+
         version = resource_version_create(
             context, {
                 'resource_id': resource['id'],
@@ -551,9 +686,10 @@ class TestActivityActions(object):
             )
 
 
-@pytest.mark.usefixtures('clean_db', 'versions_setup')
+@pytest.mark.usefixtures('clean_db_with_migrations', 'versions_setup', 'with_plugins')
 class TestResourceView(object):
     def test_resource_view_list_returns_versions_view_last(self):
+        user = factories.User()
         org = factories.Organization()
         dataset = factories.Dataset(owner_org=org['id'])
         resource = factories.Resource(
@@ -574,15 +710,20 @@ class TestResourceView(object):
             'description': 'A nice versions view',
         }
 
-        versions_view = helpers.call_action('resource_view_create', **versions_view_dict)
-        image_view = helpers.call_action('resource_view_create', **image_view_dict)
+        versions_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **versions_view_dict)
+        model.Session.commit()
+        image_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict)
+        model.Session.commit()
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
-        assert resource_views[0]['id'] == image_view['id']
-        assert resource_views[1]['id'] == versions_view['id']
+        assert resource_views[0]['id'] == image_view['id'], \
+            f"Expected image_view at [0], got {resource_views[0]['view_type']}"
+        assert resource_views[1]['id'] == versions_view['id'], \
+            f"Expected versions_view at [1], got {resource_views[1]['view_type']}"
 
     def test_resource_view_list_returns_default_order_if_no_versions_view(self):
+        user = factories.User()
         org = factories.Organization()
         dataset = factories.Dataset(owner_org=org['id'])
         resource = factories.Resource(
@@ -603,10 +744,12 @@ class TestResourceView(object):
             'image_url': 'url',
         }
 
-        image_view = helpers.call_action('resource_view_create', **image_view_dict)
-        image_view_2 = helpers.call_action('resource_view_create', **image_view_dict_2)
+        image_view = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict)
+        model.Session.commit()
+        image_view_2 = helpers.call_action('resource_view_create', context={'user': user['name']}, **image_view_dict_2)
+        model.Session.commit()
 
         resource_views = helpers.call_action('resource_view_list', id=resource['id'])
 
-        assert resource_views[0]['id'] == image_view['id']
-        assert resource_views[1]['id'] == image_view_2['id']
+        assert resource_views[0]['id'] == image_view['id'], "Expected first view at [0]"
+        assert resource_views[1]['id'] == image_view_2['id'], "Expected second view at [1]"
